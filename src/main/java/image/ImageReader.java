@@ -46,11 +46,16 @@ public class ImageReader {
 		
 
 	}
+	
+	
 
 	public Color[][] getColors(File file) throws IOException {
 
 		BufferedImage image = ImageIO.read(file);
 		colors = new Color[image.getWidth()][image.getHeight()];
+		
+		
+		
 		for (int i = 0; i < image.getWidth(); i++) {
 			for (int j = 0; j < image.getHeight(); j++) {
 				// System.out.println(i + " " +j);
@@ -59,7 +64,7 @@ public class ImageReader {
 				// colors.add(new Color(image.getRGB(i, j)));
 			}
 		}
-
+		
 		return colors;
 	}
 
@@ -110,6 +115,9 @@ public class ImageReader {
 		}
 
 	}
+	
+	
+
 	
 	
 

@@ -24,6 +24,9 @@ public class MatrixOperations {
 			for (int j = 0; j < m[0].length; j++) { 
 		
 			k[i][j]=Integer.sum(m[i][j], n[i][j]); 
+			if(k[i][j] > 255) {
+				k[i][j] =255;
+			}
 					
 			 }
 			}
@@ -39,6 +42,31 @@ public class MatrixOperations {
 			for (int j = 0; j < m[i].length; j++) { 
 				m[i][j] = m[i][j]+ coeff;
 
+			}
+			
+		}
+		return m;
+	}
+	
+	public Integer [][] divide(Integer[][] m, Integer coeff){
+		
+		
+		for (int i = 0; i < m.length; i++) { 
+			for (int j = 0; j < m[i].length; j++) { 
+				m[i][j] = m[i][j]/coeff;
+
+			}
+			
+		}
+		return m;
+		
+	}
+	
+	public Integer[][] returnNullMatrix (Integer [][] m) {
+		
+		for (int i = 0; i < m.length; i++) { 
+			for (int j = 0; j < m[i].length; j++) { 
+				m[i][j] = 0;
 			}
 			
 		}

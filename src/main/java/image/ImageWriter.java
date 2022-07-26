@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 public class ImageWriter {
 
 	int rgb[][];
+	int newPixels[];
 	Random rand = new Random();
 
 	ImageReader imRead = new ImageReader();
@@ -21,15 +22,82 @@ public class ImageWriter {
 	public static int combine(int r, int b, int g) {
 		return ((r & 0xFF) << 16) | ((g & 0xFF) << 8) | ((b & 0xFF) << 0);
 	}
+	
+	
+	public int[][] getResizedPixels(File file, int sf) throws IOException {
+		
+		Color matrix[][] = imRead.getColors(file);
+		BufferedImage image = ImageIO.read(file);
+		
+		MatrixOperations matOp = new MatrixOperations();
+		
+		int oldWidth = image.getWidth();
+		int oldHeight = image.getHeight();
+		
+		Integer oldBlue[][] = imRead.getPixels(file, matrix, "blue");
+		Integer oldRed[][] = imRead.getPixels(file, matrix, "red");
+		Integer oldGreen[][] = imRead.getPixels(file, matrix, "green");
+		
+		Integer newBlue[][] = new Integer[sf*oldWidth][sf*oldHeight];
+		Integer newGreen[][] = new Integer[sf*oldWidth][sf*oldHeight];
+		Integer newRed[][] = new Integer[sf*oldWidth][sf*oldHeight];
+		
+		
+		for (int i = 0; i < oldWidth; i++) {
+
+			for (int j = 0; j < oldHeight; j++) {
+				newBlue[(i*sf)][(j*sf)] = oldBlue[i][j];
+				newBlue[(i*sf)+1][(j*sf)] = oldBlue[i][j];
+				newBlue[(i*sf)][(j*sf)+1] = oldBlue[i][j];
+				newBlue[(i*sf)+1][(j*sf)+1] = oldBlue[i][j];
+				
+				newRed[(i*sf)][(j*sf)] = oldRed[i][j];
+				newRed[(i*sf)+1][(j*sf)] = oldRed[i][j];
+				newRed[(i*sf)][(j*sf)+1] = oldRed[i][j];
+				newRed[(i*sf)+1][(j*sf)+1] = oldRed[i][j];
+				
+				newGreen[(i*sf)][(j*sf)] = oldGreen[i][j];
+				newGreen[(i*sf)+1][(j*sf)] = oldGreen[i][j];
+				newGreen[(i*sf)][(j*sf)+1] = oldGreen[i][j];
+				newGreen[(i*sf)+1][(j*sf)+1] = oldGreen[i][j];
+				
+			}
+		}
+		
+		return recombineIntoRGB(newRed, newBlue, newGreen);
+	}
+	
+	
+	
+	public BufferedImage resizeImage(File file, int sf) throws IOException {
+		
+		
+		
+		int newRGB[][] = getResizedPixels(file, sf);
+		
+		BufferedImage img = new BufferedImage(newRGB.length, newRGB[0].length,
+			    BufferedImage.TYPE_INT_RGB);
+
+		for (int i = 0; i < newRGB.length; i++) {
+
+			for (int j = 0; j < newRGB[0].length; j++) {
+				img.setRGB(i, j, newRGB[i][j]);
+			}
+		}
+		
+		return img;
+	}
 
 	public int[][] recombineIntoRGB(Integer r[][], Integer b[][], Integer g[][]) {
-
-		rgb = new int[1000][1000];
-		Integer[][] RGB = new Integer[1000][1000];
+       System.out.println("------------------------------" + r.length);
+       System.out.println("------------------------------" + r[0].length);
+		rgb = new int[r.length][r[0].length];
+		
 		for (int i = 0; i < r.length; i++) {
 
 			for (int j = 0; j < r[i].length; j++) {
-				RGB[i][j] = Integer.valueOf(rgb[i][j]);
+				
+				
 
 				rgb[i][j] = combine(r[i][j], b[i][j], g[i][j]);
 				System.out.println(rgb[i][j]);
@@ -38,7 +106,67 @@ public class ImageWriter {
 		// imRead.printImageMatrix(RGB);
 		return rgb;
 	}
+	
+	
+	public BufferedImage getGreen(File file, MatrixOperations matOp) throws IOException {
+		Color matrix[][] = imRead.getColors(file);
+		BufferedImage image = ImageIO.read(file);
+		Integer blue[][] = imRead.getPixels(file, matrix, "blue");
+		Integer red[][] = imRead.getPixels(file, matrix, "red");
+		Integer green[][] = imRead.getPixels(file, matrix, "green");
+		
+		Integer newMatRed[][] = matOp.returnNullMatrix(red);
+		Integer newMatBlue[][] = matOp.returnNullMatrix(blue);
+		
+		int rgb[][] = recombineIntoRGB(newMatRed, newMatBlue, green);
+		for (int i = 0; i < image.getWidth(); i++) {
+			for (int j = 0; j < image.getHeight(); j++) {
+				image.setRGB(i, j, rgb[i][j]);
+			}
+		}
+		return image;
+	}
 
+	public BufferedImage getRed(File file, MatrixOperations matOp) throws IOException {
+		Color matrix[][] = imRead.getColors(file);
+		BufferedImage image = ImageIO.read(file);
+		Integer blue[][] = imRead.getPixels(file, matrix, "blue");
+		Integer red[][] = imRead.getPixels(file, matrix, "red");
+		Integer green[][] = imRead.getPixels(file, matrix, "green");
+		
+		Integer newMatGreen[][] = matOp.returnNullMatrix(green);
+		Integer newMatBlue[][] = matOp.returnNullMatrix(blue);
+		
+		int rgb[][] = recombineIntoRGB(red, newMatBlue, newMatGreen);
+		for (int i = 0; i < image.getWidth(); i++) {
+			for (int j = 0; j < image.getHeight(); j++) {
+				image.setRGB(i, j, rgb[i][j]);
+			}
+		}
+		return image;
+	}
+
+	
+	public BufferedImage getBlue(File file, MatrixOperations matOp) throws IOException {
+		Color matrix[][] = imRead.getColors(file);
+		BufferedImage image = ImageIO.read(file);
+		Integer blue[][] = imRead.getPixels(file, matrix, "blue");
+		Integer red[][] = imRead.getPixels(file, matrix, "red");
+		Integer green[][] = imRead.getPixels(file, matrix, "green");
+		
+		Integer newMatRed[][] = matOp.returnNullMatrix(red);
+		Integer newMatGreen[][] = matOp.returnNullMatrix(green);
+		
+		int rgb[][] = recombineIntoRGB(newMatRed, blue, newMatGreen);
+		for (int i = 0; i < image.getWidth(); i++) {
+			for (int j = 0; j < image.getHeight(); j++) {
+				image.setRGB(i, j, rgb[i][j]);
+			}
+		}
+		return image;
+	}
+
+	
 	public BufferedImage returnImage(File file, MatrixOperations matOp, Integer coeff) throws IOException {
 		BufferedImage image = ImageIO.read(file);
 
@@ -51,6 +179,32 @@ public class ImageWriter {
 		Integer newMatRed[][] = matOp.addCoeff(red, coeff);
 		Integer newMatBlue[][] = matOp.addCoeff(blue, coeff);
 		Integer newMatGreen[][] = matOp.addCoeff(green, coeff);
+
+		int rgb[][] = recombineIntoRGB(newMatRed, newMatBlue, newMatGreen);
+		for (int i = 0; i < image.getWidth(); i++) {
+			for (int j = 0; j < image.getHeight(); j++) {
+				image.setRGB(i, j, rgb[i][j]);
+			}
+		}
+		return image;
+	}
+	
+	
+	
+	public BufferedImage divideByCoeff(File file, MatrixOperations matOp, Integer coeff) throws IOException {
+		
+		
+		BufferedImage image = ImageIO.read(file);
+
+		Color matrix[][] = imRead.getColors(file);
+
+		Integer blue[][] = imRead.getPixels(file, matrix, "blue");
+		Integer red[][] = imRead.getPixels(file, matrix, "red");
+		Integer green[][] = imRead.getPixels(file, matrix, "green");
+
+		Integer newMatRed[][] = matOp.divide(red, coeff);
+		Integer newMatBlue[][] = matOp.divide(blue, coeff);
+		Integer newMatGreen[][] = matOp.divide(green, coeff);
 
 		int rgb[][] = recombineIntoRGB(newMatRed, newMatBlue, newMatGreen);
 		for (int i = 0; i < image.getWidth(); i++) {
@@ -127,5 +281,10 @@ public class ImageWriter {
 		return image1;
 
 	}
+	
+
+	
+	
+	
 
 }
