@@ -24,7 +24,7 @@ public class ImageWriter {
 	}
 	
 	
-	public int[][] getResizedPixels(File file, int sf) throws IOException {
+	public int[][] getResizedPixels(File file, float sf) throws IOException {
 		
 		Color matrix[][] = imRead.getColors(file);
 		BufferedImage image = ImageIO.read(file);
@@ -38,38 +38,26 @@ public class ImageWriter {
 		Integer oldRed[][] = imRead.getPixels(file, matrix, "red");
 		Integer oldGreen[][] = imRead.getPixels(file, matrix, "green");
 		
-		Integer newBlue[][] = new Integer[sf*oldWidth][sf*oldHeight];
-		Integer newGreen[][] = new Integer[sf*oldWidth][sf*oldHeight];
-		Integer newRed[][] = new Integer[sf*oldWidth][sf*oldHeight];
-		
-		
-		for (int i = 0; i < oldWidth; i++) {
 
-			for (int j = 0; j < oldHeight; j++) {
-				newBlue[(i*sf)][(j*sf)] = oldBlue[i][j];
-				newBlue[(i*sf)+1][(j*sf)] = oldBlue[i][j];
-				newBlue[(i*sf)][(j*sf)+1] = oldBlue[i][j];
-				newBlue[(i*sf)+1][(j*sf)+1] = oldBlue[i][j];
-				
-				newRed[(i*sf)][(j*sf)] = oldRed[i][j];
-				newRed[(i*sf)+1][(j*sf)] = oldRed[i][j];
-				newRed[(i*sf)][(j*sf)+1] = oldRed[i][j];
-				newRed[(i*sf)+1][(j*sf)+1] = oldRed[i][j];
-				
-				newGreen[(i*sf)][(j*sf)] = oldGreen[i][j];
-				newGreen[(i*sf)+1][(j*sf)] = oldGreen[i][j];
-				newGreen[(i*sf)][(j*sf)+1] = oldGreen[i][j];
-				newGreen[(i*sf)+1][(j*sf)+1] = oldGreen[i][j];
-				
-			}
-		}
 		
+		int newWidth = Math.round(sf*oldWidth);
+		System.out.println("cccccccccccccccccccccc: " + newWidth);
+		int newHeight = Math.round(sf*oldHeight);
+		
+		Integer newBlue[][] = matOp.resizeImPixels(oldBlue, (int) (sf*oldHeight),(int) (sf * oldWidth));
+		Integer newGreen[][] = matOp.resizeImPixels(oldGreen, (int) (sf*oldHeight),(int) (sf * oldWidth));
+		Integer newRed[][] = matOp.resizeImPixels(oldRed, (int) (sf*oldHeight),(int) (sf * oldWidth));
+
+		System.out.println("============-------=======: " + newBlue.length);
+		
+		
+			
 		return recombineIntoRGB(newRed, newBlue, newGreen);
 	}
 	
 	
 	
-	public BufferedImage resizeImage(File file, int sf) throws IOException {
+	public BufferedImage resizeImage(File file, float sf) throws IOException {
 		
 		
 		
@@ -96,14 +84,23 @@ public class ImageWriter {
 		for (int i = 0; i < r.length; i++) {
 
 			for (int j = 0; j < r[i].length; j++) {
-				
-				
+				if (r[i][j] == null && g[i][j] == null && b[i][j] == null) {
+					r[i][j]=0;
+					g[i][j]=0;
+					b[i][j]=0;
+				}
+			}
+		}
+		
+		for (int i = 0; i < r.length; i++) {
 
+			for (int j = 0; j < r[i].length; j++) {
+				
 				rgb[i][j] = combine(r[i][j], b[i][j], g[i][j]);
 				System.out.println(rgb[i][j]);
 			}
 		}
-		// imRead.printImageMatrix(RGB);
+	
 		return rgb;
 	}
 	
@@ -282,7 +279,7 @@ public class ImageWriter {
 
 	}
 	
-
+  
 	
 	
 	
