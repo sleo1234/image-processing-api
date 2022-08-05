@@ -25,8 +25,8 @@ class ImageProcessApplicationTests {
 	
 	public void testImageScaling() throws IOException {
 		
-		float fs = 3.5f;
-		File f = new File("C:/Users/Leo/eclipse-workspace/image-process/Files-Upload/image2.jpg");
+		Float fs = 0.5f;
+		File f = new File("C:/Users/Leo/eclipse-workspace/image-process/Files-Upload/imr2.jpg");
 		
 		int matrix [][] = imWrite.getResizedPixels(f, fs);
 		System.out.println("======Width: " + matrix.length);

@@ -40,31 +40,6 @@ public class MatrixOperations {
 		}
 		return m;
 	}
-
-	public static Integer[][] resizePixels(Integer[][] mat, float sf) {
-		int width = mat.length;
-		int height = mat[0].length;
-
-		int scaledWidth = (int) (sf * width);
-		int scaledHeight = (int) (sf * height);
-
-		Integer[] o = matToArray(mat);
-
-		// printArray(o);
-
-		Integer[] out = new Integer[scaledWidth * scaledHeight];
-
-		for (int i = 0; i < scaledHeight; i++) {
-			for (int j = 0; j < scaledWidth; j++) {
-				//int y = Math.min(Math.round(i / sf), height-1) * (width-1);
-				//int x = Math.min(Math.round(j / sf), width);
-				int y = Math.round(i*sf);
-				int x = Math.round(j*sf);
-				out[((scaledWidth * i) + j)] = o[(y*width + x)];
-			}
-		}
-		return arrToMat(out, (int) (sf * mat[0].length), (int) (sf * mat.length));
-	}
 	
 	
 	public Integer[][] resizeImPixels(Integer[][] mat,int w2,int h2) {
@@ -159,4 +134,16 @@ public static void printArray (Integer [] m){
 		}
 		    }
 		}
+		
+		
+		public static void printMatrix (int [][]m){
+		    for (int i=0; i< m.length; i++){
+		        System.out.println(" ");
+		       for (int j=0; j< m[0].length; j++){
+		           System.out.print(m[i][j]+" ");
+		}
+		    }
+		}
+		
+		
 }

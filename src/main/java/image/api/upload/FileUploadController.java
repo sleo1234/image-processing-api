@@ -1,6 +1,5 @@
 package image.api.upload;
 
-import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -9,6 +8,7 @@ import java.time.LocalDate;
 
 import javax.imageio.ImageIO;
 
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Date;
 import image.ImageReader;
 import image.ImageWriter;
 import image.MatrixOperations;
@@ -121,12 +120,36 @@ public class FileUploadController {
 		response.setDonwloadUri("/downloadFile");
 		
 		
+		
 	return new ResponseEntity<FileUploadResponse>(response, HttpStatus.OK);
 	
 				
 	}
 	
+	@PostMapping("/change_resolution")
 	
+	public  ResponseEntity<FileUploadResponse> changeResolution (@RequestParam("file") MultipartFile multipartFile,
+			@RequestParam("sf") String sf) throws IOException{
+	String fileName = StringUtils.cleanPath(multipartFile.getOriginalFilename());
+	System.out.println(fileName);
+	long size = multipartFile.getSize();
+	FileUploadUtil.saveFile(fileName, multipartFile);
+	System.out.println(Paths.get("Files-Upload"));
+	FileUploadResponse response = new FileUploadResponse();
+	response.setFileName(fileName); 
+	String path = "C:/Users/Leo/eclipse-workspace/image-process/Files-Upload/";
+	File file = new File(path+fileName);
 	
+	BufferedImage imageToWrite =imWrite.resizeImage(file, Float.valueOf(sf));
+    File f = new File(path+fileName.substring(0,fileName.length()-4)+ generatedString + ".jpg");
+	
+
+    boolean isSaved = ImageIO.write(imageToWrite, "jpg", f);
+    System.out.println(isSaved);
+	response.setSize(size);
+	response.setDonwloadUri("/downloadFile");
+	
+	return new ResponseEntity<FileUploadResponse>(response, HttpStatus.OK);
+	}
 
 }

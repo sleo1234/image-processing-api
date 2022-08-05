@@ -51,7 +51,7 @@ public class ImageWriter {
 		System.out.println("============-------=======: " + newBlue.length);
 		
 		
-			
+		matOp.printMatrix(recombineIntoRGB(newRed, newBlue, newGreen));	
 		return recombineIntoRGB(newRed, newBlue, newGreen);
 	}
 	
@@ -97,7 +97,7 @@ public class ImageWriter {
 			for (int j = 0; j < r[i].length; j++) {
 				
 				rgb[i][j] = combine(r[i][j], b[i][j], g[i][j]);
-				System.out.println(rgb[i][j]);
+				//System.out.println(rgb[i][j]);
 			}
 		}
 	
